@@ -68,37 +68,6 @@ function main(){
 
 
     function check_card(blog){
-        get_date();
-
-        let card=blog.querySelectorAll('.ogpCard_link');
-        let info=document.querySelector('.info');
-        if(card.length==0){
-            if(info){
-                info.innerHTML='<p class="c_count_0">'+ card.length +'</p>'; }
-            setTimeout(()=>{
-                let next=document.querySelector('.skin-pagingPrev');
-                if(next){
-                    let link=next.href;
-                    if(link){
-                        location.href=link; }}}, 400); }
-        else{
-            if(info){
-                info.innerHTML='<p class="c_count">'+ card.length +'</p>'; }}
-
-
-        function get_date(){
-            let app_id=document.querySelector('head script[type="application/ld+json"]');
-            if(app_id){
-                let data=app_id.textContent;
-                let regex=/"datePublished"[^T]*/;
-                let date=data.match(regex).toString();
-                if(date){
-                    date=date.replace('"datePublished":"', '');
-                    let date_disp=document.querySelector('.date_disp');
-                    if(date_disp){
-                        date_disp.textContent=date; }}}}
-
-
         sessionStorage.setItem('CheckLinkCard', 0);
         let order;
 
@@ -114,6 +83,7 @@ function main(){
 
 
         function sender(order){
+            let card=blog.querySelectorAll('.ogpCard_link');
             if(order<card.length){
                 let target_card=card[order];
                 target_card.scrollIntoView({block: 'center'}); // 画面の中央に配置
@@ -174,6 +144,45 @@ function main(){
             } //  if(clamp_p && m_height_p && l_height_p)
 
         } // view_card()
+
+
+
+        get_date();
+        info_disp();
+
+
+
+        function get_date(){
+            let app_id=document.querySelector('head script[type="application/ld+json"]');
+            if(app_id){
+                let data=app_id.textContent;
+                let regex=/"datePublished"[^T]*/;
+                let date=data.match(regex).toString();
+                if(date){
+                    date=date.replace('"datePublished":"', '');
+                    let date_disp=document.querySelector('.date_disp');
+                    if(date_disp){
+                        date_disp.textContent=date; }}}}
+
+
+
+        function info_disp(){
+            let card=blog.querySelectorAll('.ogpCard_link');
+            let info=document.querySelector('.info');
+            if(card.length==0){
+                if(info){
+                    info.innerHTML='<p class="c_count_0">'+ card.length +'</p>'; }
+                setTimeout(()=>{
+                    let next=document.querySelector('.skin-pagingPrev');
+                    if(next){
+                        let link=next.href;
+                        if(link){
+                            location.href=link; }}}, 400); }
+            else{
+                if(info){
+                    info.innerHTML='<p class="c_count">'+ card.length +'</p>'; }}
+
+        } // info_disp()
 
     } // check_card()
 
