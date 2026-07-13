@@ -1,15 +1,13 @@
 // ==UserScript==
 // @name        Check LinkCard
 // @namespace    http://tampermonkey.net/
-// @version        0.1
+// @version        0.2
 // @description        ブログ記事上のリンクカードの修復チェックツール
 // @author        Ameba Blog User
 // @match        https://ameblo.jp/*
 // @noframes
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=ameblo.jp
 // @grant        none
-// @updateURL        https://github.com/personwritep/Check_LinkCard/raw/main/Check_LinkCard.user.js
-// @downloadURL        https://github.com/personwritep/Check_LinkCard/raw/main/Check_LinkCard.user.js
 // ==/UserScript==
 
 
@@ -31,8 +29,9 @@ function main(){
         '<div class="m_height"></div>'+
         '<div class="l_height"></div>'+
         '<style>'+
-        '.card_disp { font: 16px/22px Meiryo; color: #000; background: #fff; z-index: 200; '+
-        'position: fixed; top: 43vh; left: 10px; min-width: 132px; border: 1px solid #009688; }'+
+        '.card_disp { position: fixed; top: calc(50% - 54px); left: 10px; z-index: 200; '+
+        'font: 16px/22px Meiryo; color: #000; background: #fff; min-width: 132px; '+
+        'border: 1px solid #009688; box-shadow: 4px 4px 6px 0 #66666650; }'+
         '.info { text-align: center; } '+
         '.c_count { padding: 5px 10px 2px; color: #fff; background: #000; } '+
         '.c_count_0 { padding: 5px 10px 2px; color: #fff; background: #bbb; } '+
@@ -42,8 +41,10 @@ function main(){
         '.info:has(.c_order) ~ .l_height { margin-bottom: 6px; } '+
         '.ex_card { color: #2196f3; text-shadow: 0 0 1px #2196f3; } '+
 
-        '.date_disp { font: 19px/20px Meiryo; color: #333; background: #fff; z-index: 200; '+
-        'position: absolute; top: 38vh; left: 10px; padding: 6px 10px; height: 18px; width: 114px; } '+
+        '.date_disp { position: absolute; top: calc(50% - 100px); left: 10px; z-index: 200; '+
+        'font: 19px/20px Meiryo; color: #333; background: #fff; width: 130px; height: 17px; '+
+        'padding: 6px 0; text-align: center; '+
+        'border: 2px solid #aaa;  box-shadow: 4px 4px 6px 0 #66666650; } '+
 
         'html { scroll-behavior: unset !important; }'+
         '</style><div>';
@@ -94,7 +95,7 @@ function main(){
                 if(card_disp){
                     card_disp.remove(); }
 
-                let next=document.querySelector('.skin-pagingPrev');
+                let next=document.querySelector('.skin-pagingPrev, .pagingPrev, .previousPage');
                 if(next){
                     let link=next.href;
                     if(link){
@@ -173,7 +174,7 @@ function main(){
                 if(info){
                     info.innerHTML='<p class="c_count_0">'+ card.length +'</p>'; }
                 setTimeout(()=>{
-                    let next=document.querySelector('.skin-pagingPrev');
+                    let next=document.querySelector('.skin-pagingPrev, .pagingPrev, .previousPage');
                     if(next){
                         let link=next.href;
                         if(link){
