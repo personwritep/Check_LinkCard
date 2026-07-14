@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Check LinkCard
 // @namespace    http://tampermonkey.net/
-// @version        0.2
+// @version        0.3
 // @description        ブログ記事上のリンクカードの修復チェックツール
 // @author        Ameba Blog User
 // @match        https://ameblo.jp/*
@@ -24,6 +24,7 @@ main();
 function main(){
 
     let disp=
+        '<div class="rapid">◀◀</div>'+
         '<div class="date_disp"></div>'+
         '<div class="card_disp">'+
         '<div class="info"></div>'+
@@ -33,7 +34,7 @@ function main(){
         '<style>'+
         '.card_disp { position: fixed; top: calc(50% - 54px); left: 10px; z-index: 200; '+
         'font: 16px/22px Meiryo; color: #000; background: #fff; min-width: 132px; '+
-        'border: 1px solid #009688; box-shadow: 4px 4px 6px 0 #66666650; }'+
+        'border: 1px solid #009688; box-shadow: 2px 2px 6px 0 #66666650; }'+
         '.info { text-align: center; } '+
         '.c_count { padding: 5px 10px 2px; color: #fff; background: #000; } '+
         '.c_count_0 { padding: 5px 10px 2px; color: #fff; background: #bbb; } '+
@@ -43,10 +44,15 @@ function main(){
         '.info:has(.c_order) ~ .l_height { margin-bottom: 6px; } '+
         '.ex_card { color: #2196f3; text-shadow: 0 0 1px #2196f3; } '+
 
+        '.rapid { position: absolute; top: calc(50% - 136px); left: 11px; z-index: 200; '+
+        'font: 16px/22px Meiryo; color: #333; background: #fff; border: 1px solid #444; '+
+        'border-radius: 3px; padding: 2px 6px 0; box-shadow: 2px 2px 6px 0 #66666650; '+
+        'display: none; } '+
+
         '.date_disp { position: absolute; top: calc(50% - 100px); left: 10px; z-index: 200; '+
-        'font: 19px/20px Meiryo; color: #333; background: #fff; width: 130px; height: 17px; '+
+        'font: 19px/20px Meiryo; color: #333; background: #fff; width: 132px; height: 18px; '+
         'padding: 6px 0; text-align: center; '+
-        'border: 2px solid #aaa;  box-shadow: 4px 4px 6px 0 #66666650; } '+
+        'border: 1px solid #444; box-shadow: 2px 2px 6px 0 #66666650; } '+
 
         'html { scroll-behavior: unset !important; }'+
         '</style><div>';
@@ -78,9 +84,15 @@ function main(){
             if(event.keyCode==32){
                 event.preventDefault();
                 event.stopImmediatePropagation();
-
-                order=sessionStorage.getItem('CheckLinkCard')/1;
-                sender(order); }
+                if(!event.ctrlKey){
+                    order=sessionStorage.getItem('CheckLinkCard')/1;
+                    sender(order); }}
+            else if(event.ctrlKey){ //「Ctrl」キーで「カウント0」の自動ページ送りを「ON / OFF」
+                if(sessionStorage.getItem('CheckLinkCard_run')!=0){ //「0:OFF」「1:ON」
+                    sessionStorage.setItem('CheckLinkCard_run', 0); }
+                else{
+                    sessionStorage.setItem('CheckLinkCard_run', 1); }
+                rapid_disp(); }
         });
 
 
@@ -150,8 +162,19 @@ function main(){
 
 
 
+        rapid_disp();
         get_date();
         info_disp();
+
+
+
+        function rapid_disp(){
+            let rapid=document.querySelector('.rapid');
+            if(rapid){
+                if(sessionStorage.getItem('CheckLinkCard_run')==0){
+                    rapid.style.display='none'; }
+                else{
+                    rapid.style.display='block'; }}}
 
 
 
@@ -175,12 +198,13 @@ function main(){
             if(card.length==0){
                 if(info){
                     info.innerHTML='<p class="c_count_0">'+ card.length +'</p>'; }
-                setTimeout(()=>{
-                    let next=document.querySelector('.skin-pagingPrev, .pagingPrev, .previousPage');
-                    if(next){
-                        let link=next.href;
-                        if(link){
-                            location.href=link; }}}, 400); }
+                if(sessionStorage.getItem('CheckLinkCard_run')!=0){
+                    setTimeout(()=>{
+                        let next=document.querySelector('.skin-pagingPrev, .pagingPrev, .previousPage');
+                        if(next){
+                            let link=next.href;
+                            if(link){
+                                location.href=link; }}}, 400); }}
             else{
                 if(info){
                     info.innerHTML='<p class="c_count">'+ card.length +'</p>'; }}
